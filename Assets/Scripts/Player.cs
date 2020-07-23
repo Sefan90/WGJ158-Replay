@@ -4,30 +4,23 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    Rigidbody2D rb;
+    public GameObject door;
     public Camera MainCamera;
     float speed = 4;
-    float jumpspeed = 5;
+    float jumpspeed = 175;
     bool ground = false;
     bool rpressed = false;
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {   
-        Vector2 newVC = new Vector2(0.0f,GetComponent<Rigidbody2D>().velocity.y); //new Vector2(0.0f,0.0f); //
-
-        if (ground == true)
-        {
-            newVC = new Vector2(0.0f,0.0f);
-        }
-        else if(newVC.y > -jumpspeed)
-        {
-            newVC = new Vector2(0.0f,GetComponent<Rigidbody2D>().velocity.y-jumpspeed/100);
-        }
+        Vector2 newVC = new Vector2(0.0f,rb.velocity.y);
 
         if (Input.GetKey(KeyCode.A))
         {
@@ -39,14 +32,15 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.W) && ground == true)
         {
-            newVC += new Vector2(0.0f, jumpspeed);//*Time.deltaTime;
+            //newVC += new Vector2(0.0f, jumpspeed);//*Time.deltaTime;
+            rb.AddForce(Vector3.up*jumpspeed);
             ground = false;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            newVC += new Vector2(0.0f, -speed);//*Time.deltaTime;
+            //newVC += new Vector2(0.0f, -speed);//*Time.deltaTime;
+            rb.AddForce(Vector3.down);
         }   
-        GetComponent<Rigidbody2D>().velocity = newVC;
         if (Input.GetKeyDown(KeyCode.R))
         {
             rpressed = true;
@@ -54,6 +48,8 @@ public class Player : MonoBehaviour
             tmp.name = "Player";
             Destroy(gameObject);
         }
+
+        rb.velocity = newVC;
     }
 
     void OnCollisionEnter2D(Collision2D col)
