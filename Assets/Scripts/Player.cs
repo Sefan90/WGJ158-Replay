@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public Camera MainCamera;
     float speed = 4;
-    float jumpspeed = 2.5f;
+    float jumpspeed = 5;
     bool ground = false;
+    bool rpressed = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,9 +24,9 @@ public class Player : MonoBehaviour
         {
             newVC = new Vector2(0.0f,0.0f);
         }
-        else if(newVC.y > -speed*jumpspeed)
+        else if(newVC.y > -jumpspeed)
         {
-            newVC = new Vector2(0.0f,GetComponent<Rigidbody2D>().velocity.y-speed/100);
+            newVC = new Vector2(0.0f,GetComponent<Rigidbody2D>().velocity.y-jumpspeed/100);
         }
 
         if (Input.GetKey(KeyCode.A))
@@ -37,7 +39,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.W) && ground == true)
         {
-            newVC += new Vector2(0.0f, speed*jumpspeed);//*Time.deltaTime;
+            newVC += new Vector2(0.0f, jumpspeed);//*Time.deltaTime;
             ground = false;
         }
         if (Input.GetKey(KeyCode.S))
@@ -45,6 +47,13 @@ public class Player : MonoBehaviour
             newVC += new Vector2(0.0f, -speed);//*Time.deltaTime;
         }   
         GetComponent<Rigidbody2D>().velocity = newVC;
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            rpressed = true;
+            GameObject tmp = Instantiate(gameObject,new Vector3(-1.0f,-0.5f,0.0f),Quaternion.identity);
+            tmp.name = "Player";
+            Destroy(gameObject);
+        }
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -80,5 +89,17 @@ public class Player : MonoBehaviour
     void OnCollisionExit2D(Collision2D col)
     {
         ground = false;
+    }
+
+    void OnBecameInvisible()
+    {
+        if(rpressed == false)
+        {
+            MainCamera.orthographicSize += 2;
+            //MainCamera.transform.position += new Vector3(1.25f, 1.0f, 0.0f);;
+            GameObject tmp = Instantiate(gameObject,new Vector3(-1.0f,-0.5f,0.0f),Quaternion.identity);
+            tmp.name = "Player";
+            Destroy(gameObject);
+        }
     }
 }
